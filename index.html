@@ -1,118 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suyash - 3D Model with Drag/Touch Rotation</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suyash - 3D Model with Drag/Touch Rotation</title>
 
-  <!-- Include Three.js and GLTFLoader via script tags -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Include Three.js and GLTFLoader via script tags -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,500;1,400&display=swap");
 
-    #hero{
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-    }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    canvas {
-      display: block;
-    }
+      html {
+        font-size: 62.5%;
+        font-family: "Roboto", sans-serif;
+      }
 
-    .content {
-      position: absolute;
-      top: 10%;
-      left: 10%;
-      color: white;
-      z-index: 10;
-    }
+      li {
+        list-style: none;
+      }
 
-    h1 {
-      font-size: 3rem;
-    }
+      a {
+        text-decoration: none;
+      }
 
-    p {
-      font-size: 1.5rem;
-    }
-  </style>
-</head>
-<body>
-  <div id="hero">
-    <div class="content">
-      <h1>3D Model with Interaction</h1>
-      <p>Drag to rotate the model</p>
+      .header {
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+      }
+
+      .hamburger {
+        display: none;
+      }
+
+      .bar {
+        display: block;
+        width: 25px;
+        height: 3px;
+        margin: 5px auto;
+        -webkit-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+        background-color: #101010;
+      }
+
+      .nav-menu {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .nav-item {
+        margin-left: 5rem;
+      }
+
+      .nav-link {
+        font-size: 1.6rem;
+        font-weight: 400;
+        color: #475569;
+      }
+
+      .nav-link:hover {
+        color: #482ff7;
+      }
+
+      .nav-logo {
+        font-size: 2.1rem;
+        font-weight: 500;
+        color: #482ff7;
+      }
+
+      @media only screen and (max-width: 768px) {
+        .nav-menu {
+          position: fixed;
+          left: -100%;
+          top: 5rem;
+          flex-direction: column;
+          background-color: #fff;
+          width: 100%;
+          border-radius: 10px;
+          text-align: center;
+          transition: 0.3s;
+          box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-menu.active {
+          left: 0;
+        }
+
+        .nav-item {
+          margin: 2.5rem 0;
+        }
+
+        .hamburger {
+          display: block;
+          cursor: pointer;
+        }
+
+        .hamburger.active .bar:nth-child(2) {
+          opacity: 0;
+        }
+
+        .hamburger.active .bar:nth-child(1) {
+          transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger.active .bar:nth-child(3) {
+          transform: translateY(-8px) rotate(-45deg);
+        }
+      }
+
+      /* Ensure main-content and children are laid out in a row */
+      #hero {
+        width: 100%;
+        display: flex;
+        flex-direction: row; /* Items in a row */
+        justify-content: space-between;
+        align-items: center;
+        height: 100vh;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      .text-section {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        max-width: 50%; /* Ensure 50% width */
+        height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        color: white;
+        background-color: #02011a; /* Example background for visualization */
+      }
+
+      #threejs-container {
+        overflow: hidden;
+        flex: 1;
+        max-width: 50%; /* Ensure 50% width */
+        height: 100vh;
+        display: flex;
+        /* justify-content: flex-start;
+   align-items: flex-start; */
+        background-color: #e0e0e0; /* Example background for visualization */
+      }
+
+      canvas {
+        width: 50%;
+        height: 100vh;
+      }
+
+      /* Media queries for responsive behavior */
+      @media screen and (max-width: 768px) {
+        #hero {
+          width: 100%;
+          display: flex;
+          flex-direction: column; /* Stack elements vertically */
+        }
+
+        .text-section,
+        #threejs-container {
+          margin: 0;
+          width: 100vw;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          height: 50vh; /* Adjust height on mobile */
+        }
+
+        canvas {
+          height: 50vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <nav class="navbar">
+        <a href="#" class="nav-logo">WebDev.</a>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="#" class="nav-link">Services</a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">Blog</a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">About</a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">Contact</a>
+          </li>
+        </ul>
+        <div class="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </nav>
+    </header>
+
+    <div id="hero">
+      <div class="text-section">
+        <h1>I am <span style="color: #580391">Suyash</span></h1>
+        <p>I am a Full Stact Developer</p>
+      </div>
+
+      <div id="threejs-container"></div>
     </div>
-  
-    <canvas id="bgCanvas"></canvas>
-  </div>
 
-  <script>
-    // Set up the scene, camera, and renderer
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bgCanvas'), antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    <div>
+      <h1>My Projects</h1>
+    </div>
 
-    // Add lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-    scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(7, 1, -2);
-    scene.add(directionalLight);
+    <script>
+      const hamburger = document.querySelector(".hamburger");
+      const navMenu = document.querySelector(".nav-menu");
 
-    // Set camera position
-    camera.position.set(15, 3, -7); // Camera is positioned a bit higher and looking down on the model
+      hamburger.addEventListener("click", mobileMenu);
 
-    // Add OrbitControls for drag and rotate functionality
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // Smooth rotation
-    controls.dampingFactor = 0.05;
-    controls.enableZoom = true;  // Allow zooming
+      function mobileMenu() {
+        hamburger.classList.toggle("active");
+        navMenu.classList.toggle("active");
+      }
 
-    // Load the 3D model
-    const loader = new THREE.GLTFLoader();
-    loader.load('desktop_pc/scene.gltf', function (gltf) {
-      const model = gltf.scene;
-      model.scale.set(1, 1, 1);  // Scale the model
-      model.position.set(0, 0, -8);  // Center the model in front of the camera
-      scene.add(model);
+      const navLink = document.querySelectorAll(".nav-link");
 
-      // Ensure the controls look at the model when it's loaded
-      controls.target.copy(model.position);
-    }, undefined, function (error) {
-      console.error(error);
-    });
+      navLink.forEach((n) => n.addEventListener("click", closeMenu));
 
-    // Animation loop
-    function animate() {
-      requestAnimationFrame(animate);
+      function closeMenu() {
+        hamburger.classList.remove("active");
+        navMenu.classList.remove("active");
+      }
 
-      controls.update(); // Needed for damping to work properly
+      const container = document.getElementById("threejs-container");
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x02011a); // Set background color to blue
 
-      renderer.render(scene, camera);
-    }
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        container.clientWidth / container.clientHeight,
+        0.1,
+        1000
+      );
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
 
-    animate();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(renderer.domElement);
 
-    // Adjust rendering on window resize
-    window.addEventListener('resize', () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      renderer.setSize(width, height);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-    });
-  </script>
-</body>
+      window.addEventListener("resize", () => {
+        const container = document.getElementById("threejs-container");
+        camera.aspect = container.clientWidth / container.clientHeight; // Update aspect ratio
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+
+      // Add the rest of your Three.js model and animations here
+
+      renderer.setPixelRatio(window.devicePixelRatio);
+
+      // Add lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 2);
+      scene.add(ambientLight);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+      directionalLight.position.set(7, 1, -2);
+      scene.add(directionalLight);
+
+      // Set camera position
+      camera.position.set(15, 3, 1); // Camera is positioned a bit higher and looking down on the model
+      camera.rotation.set(10, 1, 1);
+
+      // Add OrbitControls for drag and rotate functionality
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false;
+      controls.enableDamping = true; // Smooth rotation
+      controls.dampingFactor = 0.05;
+      controls.minDistance = 2; // Minimum distance from the model
+      controls.maxDistance = 10; // Maximum distance from the model
+
+      // Load the 3D model
+      const loader = new THREE.GLTFLoader();
+      loader.load(
+        "desktop_pc/scene.gltf",
+        function (gltf) {
+          const model = gltf.scene;
+          model.scale.set(0.5, 0.5, 0.5); // Scale the model
+          scene.add(model);
+
+          // Ensure the controls look at the model when it's loaded
+          controls.target.copy(model.position);
+        },
+        undefined,
+        function (error) {
+          console.error(error);
+        }
+      );
+
+      // Animation loop
+      function animate() {
+        requestAnimationFrame(animate);
+
+        controls.update(); // Needed for damping to work properly
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
+  </body>
 </html>
-
