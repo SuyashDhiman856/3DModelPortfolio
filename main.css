@@ -132,6 +132,14 @@
         background-color: #02011a; /* Example background for visualization */
       }
 
+      .text-section h1{
+        font-size: xx-large;
+      }
+
+      .text-section p{
+        font-size: larger;
+      }
+
       #threejs-container {
         overflow: hidden;
         width: 50%; /* Ensure 50% width */
@@ -166,6 +174,14 @@
         .text-section{
             width: 100%;
         }
+
+        .text-section h1{
+            font-size: x-large;
+          }
+    
+          .text-section p{
+            font-size:medium;
+          }
 
         #threejs-container{
             width: 100%;
