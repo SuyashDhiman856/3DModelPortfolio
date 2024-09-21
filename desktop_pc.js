@@ -18,8 +18,8 @@ const hamburger = document.querySelector(".hamburger");
       }
 
       const container = document.getElementById("threejs-container");
-      const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x02011a); // Set background color to blue
+      const scene1 = new THREE.Scene();
+      scene1.background = new THREE.Color(0x02011a); // Set background color to blue
 
       const camera = new THREE.PerspectiveCamera(
         75,
@@ -45,10 +45,10 @@ const hamburger = document.querySelector(".hamburger");
 
       // Add lighting
       const ambientLight = new THREE.AmbientLight(0xffffff, 2);
-      scene.add(ambientLight);
+      scene1.add(ambientLight);
       const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
       directionalLight.position.set(7, 1, -2);
-      scene.add(directionalLight);
+      scene1.add(directionalLight);
 
       // Set camera position
       camera.position.set(15, 3, 1); // Camera is positioned a bit higher and looking down on the model
@@ -65,11 +65,11 @@ const hamburger = document.querySelector(".hamburger");
       // Load the 3D model
       const loader = new THREE.GLTFLoader();
       loader.load(
-        "desktop_pc/scene.gltf",
+        "./public/desktop_pc/scene.gltf",
         function (gltf) {
           const model = gltf.scene;
           model.scale.set(0.5, 0.5, 0.5); // Scale the model
-          scene.add(model);
+          scene1.add(model);
 
           // Ensure the controls look at the model when it's loaded
           controls.target.copy(model.position);
@@ -86,7 +86,7 @@ const hamburger = document.querySelector(".hamburger");
 
         controls.update(); // Needed for damping to work properly
 
-        renderer.render(scene, camera);
+        renderer.render(scene1, camera);
       }
 
       animate();
