@@ -134,10 +134,12 @@
 
       .text-section h1{
         font-size: xx-large;
+        font-weight: bold;
       }
 
       .text-section p{
         font-size: larger;
+        font-weight: 600;
       }
 
       #threejs-container {
